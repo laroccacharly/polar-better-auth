@@ -46,7 +46,7 @@ const polarPluginConfig = {
     products: [
       {
         productId: "c429985c-b08f-45ae-9666-dc62cfbd8883", // Example Product ID
-        slug: "your-product-slug" // Define a user-friendly slug
+        slug: "consultation" // Define a user-friendly slug
       },
     ],
     successUrl: `${successUrl}?checkout_id={CHECKOUT_ID}`
