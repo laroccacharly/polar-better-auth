@@ -1,11 +1,11 @@
-'use client'; // This component needs client-side interaction (router, useSession)
+'use client';
 
 import { useRouter } from 'next/navigation';
-import { authClient } from '@/lib/auth-client'; // Import authClient
+import { authClient } from '@/lib/auth-client'; 
 
 export default function Home() {
   const router = useRouter();
-  const { data, isPending, error } = authClient.useSession();
+  const { data, isPending } = authClient.useSession();
   const session = data?.session;
   const user = data?.user;
 
