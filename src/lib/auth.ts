@@ -1,9 +1,9 @@
 import { betterAuth } from "better-auth";
 import { polar } from "@polar-sh/better-auth";
+import { magicLink } from "better-auth/plugins";
 import { Polar } from "@polar-sh/sdk";
 import { Pool } from "pg";
 import dotenv from 'dotenv';
-
 dotenv.config({ path: '.env.local' });
 
 // --- Environment Variables --- //
@@ -89,9 +89,21 @@ export const auth = betterAuth({
     enabled: true,
     signup: { enabled: true },
     login: { enabled: true },
+    async sendResetPasswordEmail({ data, request }: { data: { email: string }, request: Request }) {
+       console.log("Sending reset password email to:", data.email);
+       console.log("Request details:", request);
+    },
   },
   plugins: [
     polar(polarPluginConfig),
+    magicLink({
+        sendMagicLink: async ({ email, token, url }, request) => {
+          // send email to user
+          console.log("Sending magic link to:", email);
+          console.log("Token:", token);
+          console.log("URL:", url);
+      } 
+  }),
   ],
 });
 
