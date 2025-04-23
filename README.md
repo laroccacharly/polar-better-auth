@@ -4,6 +4,10 @@
 using next 15.3
 polar.sh for payments
 better_auth for auth 
-neon for database: https://github.com/seveibar/kysely-neon
-
+neon for db 
 Next.js integration for better auth: https://www.better-auth.com/docs/integrations/next
+
+# Migration 
+```bash 
+npx @better-auth/cli migrate
+```
