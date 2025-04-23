@@ -13,6 +13,7 @@ export const env = createEnv({
         DATABASE_URL: z.string(),
         RESEND_API_KEY: z.string(),
         RESEND_FROM_EMAIL: z.string().email(),
+        BASE_URL: z.string(),
     },
     client: {},
     runtimeEnv: {
@@ -24,5 +25,6 @@ export const env = createEnv({
         DATABASE_URL: process.env.DATABASE_URL,
         RESEND_API_KEY: process.env.RESEND_API_KEY,
         RESEND_FROM_EMAIL: process.env.RESEND_FROM_EMAIL,
+        BASE_URL: process.env.BASE_URL,
     },
 })

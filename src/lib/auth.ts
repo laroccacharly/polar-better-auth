@@ -62,6 +62,7 @@ const polarPluginConfig = {
 // --- Initialize and Export betterAuth Instance --- //
 export const auth = betterAuth({
   secret: env.BETTER_AUTH_SECRET,
+  baseURL: env.BASE_URL,
   database: new Pool({
     connectionString: env.DATABASE_URL,
   }),
