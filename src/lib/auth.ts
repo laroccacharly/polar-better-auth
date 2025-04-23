@@ -77,7 +77,7 @@ export const auth = betterAuth({
   plugins: [
     polar(polarPluginConfig),
     magicLink({
-        sendMagicLink: async ({ email, token, url }, request) => {
+        sendMagicLink: async ({ email, token, url }) => {
           // send email to user
           console.log("Sending magic link via Resend to:", email);
           try {

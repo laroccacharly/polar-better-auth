@@ -45,10 +45,10 @@ export default function SignIn() {
                     callbackURL: "/dashboard",
                   },
                   {
-                     onRequest: (ctx) => {
+                     onRequest: () => {
                         setLoading(true);
                       },
-                     onResponse: (ctx) => {
+                     onResponse: () => {
                          setLoading(false);
                      },
                    },
