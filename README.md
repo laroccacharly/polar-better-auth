@@ -1,5 +1,5 @@
 # Polar better auth
-The main purpose of this repository is to demonstrate how to integrate payments (Polar) and authentication (better-auth) in a straightforward way.
+The purpose of this repository is to demonstrate how to integrate payments (Polar) and authentication (better-auth) in a straightforward way.
 
 A [live example](https://polar-better-auth.vercel.app/) is available.
 
