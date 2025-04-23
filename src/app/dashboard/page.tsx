@@ -10,7 +10,6 @@ export default async function ServerComponent() {
     if(!session) {
         return <div>Not authenticated</div>
     }
-    console.log(session)
     return (
         <div>
             <DashboardActions session={session} />

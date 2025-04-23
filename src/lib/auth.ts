@@ -34,26 +34,13 @@ const polarPluginConfig = {
   ...(env.POLAR_WEBHOOK_SECRET ? {
     webhooks: {
       secret: env.POLAR_WEBHOOK_SECRET,
-      onPayload: async (event: unknown) => { // Changed any to unknown
-        // Added type checks for safety
-        let eventId = 'unknown_id';
-        let eventType = 'unknown_type';
-        if (typeof event === 'object' && event !== null) {
-           eventId = 'id' in event ? String(event.id) : 'unknown_id';
-           eventType = 'type' in event ? String(event.type) : 'unknown_type';
-        }
-        console.log("Received Polar Webhook:", eventType, eventId);
+      onPayload: async (event: unknown) => { 
+        // TDB
+        console.log("Received Polar Webhook:", event);
       },
-      onSubscriptionUpdated: async (payload: unknown) => { // Changed any to unknown
-        // Added type checks for safety
-        let subId = 'unknown_sub_id';
-        let subStatus = 'unknown_status';
-        if (typeof payload === 'object' && payload !== null && 'subscription' in payload && typeof payload.subscription === 'object' && payload.subscription !== null) {
-            const subscription = payload.subscription;
-            subId = 'id' in subscription ? String(subscription.id) : 'unknown_sub_id';
-            subStatus = 'status' in subscription ? String(subscription.status) : 'unknown_status';
-        }
-        console.log("Subscription Updated:", subId, subStatus);
+      onSubscriptionUpdated: async (payload: unknown) => { 
+        // TDB
+        console.log("Subscription Updated:", payload);
       },
     }
   } : {})
@@ -66,27 +53,36 @@ export const auth = betterAuth({
   database: new Pool({
     connectionString: env.DATABASE_URL,
   }),
-  emailAndPassword: { // Ensure this is enabled
+  emailAndPassword: { 
     enabled: true,
     signup: { enabled: true },
-    login: { enabled: true },
-    async sendResetPasswordEmail({ data, request }: { data: { email: string }, request: Request }) {
-       console.log("Sending reset password email to:", data.email);
-       console.log("Request details:", request);
-    },
+    login: { enabled: true }
   },
   plugins: [
     polar(polarPluginConfig),
     magicLink({
-        sendMagicLink: async ({ email, token, url }) => {
+        sendMagicLink: async ({ email, url }) => {
           // send email to user
           console.log("Sending magic link via Resend to:", email);
           try {
+            const baseUrl = env.BASE_URL;
             await resend.emails.send({
               from: env.RESEND_FROM_EMAIL, // Use environment variable for sender
               to: email,
-              subject: 'Your Magic Login Link',
-              html: `<p>Click <a href="${url}">here</a> to log in.</p><p>Your token is ${token} (for debugging, remove in production)</p>`
+              subject: `Your Magic Login Link from ${baseUrl}`,
+              html: `
+                <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 5px;">
+                  <h2 style="color: #333;">Login to Your Account</h2>
+                  <p>Hello,</p>
+                  <p>Click the button below to securely log in to your account on ${baseUrl}.</p>
+                  <a href="${url}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 3px; margin-top: 15px;">
+                    Log In
+                  </a>
+                  <p style="margin-top: 20px; font-size: 0.9em; color: #666;">
+                    If you did not request this email, you can safely ignore it. This link will expire shortly.
+                  </p>
+                </div>
+              `
             });
             console.log("Magic link email sent successfully to:", email);
             console.log("Magic link URL:", url);
@@ -99,5 +95,3 @@ export const auth = betterAuth({
   nextCookies(), 
   ],
 });
-
-console.log("betterAuth instance created using Email/Password in src/lib/auth.ts"); 

@@ -1,13 +1,20 @@
-# Next.js with Polar, better auth and neon 
+# Polar better auth
+The main purpose of this repository is to demonstrate how to integrate payments (Polar) and authentication (better-auth) in a straightforward way.
 
+A [live example](https://polar-better-auth.vercel.app/) is available.
 
-using next 15.3
-polar.sh for payments
-better_auth for auth 
-neon for db 
-Next.js integration for better auth: https://www.better-auth.com/docs/integrations/next
+This project uses the following technologies:
 
-# Migration 
-```bash 
+*   Next.js 15.3
+*   [Polar](https://polar.sh/) for payments
+*   [better-auth](https://www.better-auth.com/) for authentication
+    *   [Next.js integration guide](https://www.better-auth.com/docs/integrations/next)
+*   [Neon](https://neon.tech/) for the database
+
+## Migration
+
+To run database migrations, use the better-auth CLI:
+
+```bash
 npx @better-auth/cli migrate
 ```
