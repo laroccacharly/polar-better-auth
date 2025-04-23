@@ -5,6 +5,7 @@ import { Polar } from "@polar-sh/sdk";
 import { Pool } from "pg";
 import { Resend } from 'resend';
 import { env } from "@/env";
+import { nextCookies } from "better-auth/next-js";
 
 // --- Initialize Resend Client --- //
 const resend = new Resend(env.RESEND_API_KEY);
@@ -87,12 +88,14 @@ export const auth = betterAuth({
               html: `<p>Click <a href="${url}">here</a> to log in.</p><p>Your token is ${token} (for debugging, remove in production)</p>`
             });
             console.log("Magic link email sent successfully to:", email);
+            console.log("Magic link URL:", url);
           } catch (error) {
             console.error("Failed to send magic link email:", error);
             // Handle error appropriately (e.g., log, alert)
           }
       } 
   }),
+  nextCookies(), 
   ],
 });
 
