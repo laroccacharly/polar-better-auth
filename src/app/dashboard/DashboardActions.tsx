@@ -5,6 +5,7 @@ import type React from "react";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface DashboardActionsProps {
   session: {
@@ -36,55 +37,34 @@ const DashboardActions: React.FC<DashboardActionsProps> = ({ session }) => {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        minHeight: "40vh",
-      }}
-    >
-      <div
-        style={{
-          background: "#fff",
-          borderRadius: 12,
-          boxShadow: "0 2px 16px rgba(0,0,0,0.07)",
-          padding: 32,
-          maxWidth: 360,
-          width: "100%",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 18,
-        }}
-      >
-        <div style={{ marginBottom: 18, textAlign: 'center', width: '100%' }}>
-          <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 4 }}>{user.email}</div>
+    <div className="flex items-center justify-center min-h-[calc(100vh-theme(spacing.16))] p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <CardTitle>{user.email}</CardTitle>
           {createdAtStr && (
-            <div style={{ color: '#888', fontSize: 14 }}>Joined {createdAtStr}</div>
+            <CardDescription>Joined {createdAtStr}</CardDescription>
           )}
-        </div>
-        <Button
-          variant="outline"
-          style={{ width: "100%", maxWidth: 280 }}
-          onClick={() => window.open("/api/auth/portal", "_blank")}
-        >
-          Go to Customer Portal
-        </Button>
-        <Button
-          style={{ width: "100%", maxWidth: 280 }}
-          onClick={() => window.open("/api/auth/checkout/consultation", "_blank")}
-        >
-          Purchase Consultation
-        </Button>
-        <Button
-          variant="destructive"
-          style={{ width: "100%", maxWidth: 280, marginTop: 8 }}
-          onClick={handleSignOut}
-        >
-          Sign Out
-        </Button>
-      </div>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4">
+          <Button
+            variant="outline"
+            onClick={() => window.open("/api/auth/portal", "_blank")}
+          >
+            Go to Customer Portal
+          </Button>
+          <Button
+            onClick={() => window.open("/api/auth/checkout/consultation", "_blank")}
+          >
+            Purchase Consultation
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={handleSignOut}
+          >
+            Sign Out
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 };

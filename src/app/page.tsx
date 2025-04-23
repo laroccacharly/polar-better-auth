@@ -1,7 +1,10 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { authClient } from '@/lib/auth-client'; 
+import { authClient } from '@/lib/auth-client';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Loader2 } from 'lucide-react';
 
 export default function Home() {
   const router = useRouter();
@@ -18,52 +21,40 @@ export default function Home() {
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: '20px'
-    }}>
-      <h1 style={{ marginBottom: '30px' }}>Welcome to Polar Auth Example</h1>
-      {isPending && <p>Loading session...</p>}
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle className="text-center text-xl">Welcome to Polar Auth Example</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col items-center gap-4">
+          {isPending && (
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Loader2 className="h-5 w-5 animate-spin" />
+              <span>Loading session...</span>
+            </div>
+          )}
 
-      {!isPending && session && user && (
-        <button
-          type="button"
-          onClick={goToDashboard}
-          style={{
-            padding: '10px 20px',
-            fontSize: '16px',
-            cursor: 'pointer',
-            backgroundColor: '#28a745', // Green for dashboard
-            color: 'white',
-            border: 'none',
-            borderRadius: '5px'
-          }}
-        >
-          Go to Dashboard
-        </button>
-      )}
+          {!isPending && session && user && (
+            <Button
+              type="button"
+              onClick={goToDashboard}
+              className="w-full"
+            >
+              Go to Dashboard
+            </Button>
+          )}
 
-      {!isPending && !session && (
-        <button
-          type="button"
-          onClick={goToLogin}
-          style={{
-            padding: '10px 20px',
-            fontSize: '16px',
-            cursor: 'pointer',
-            backgroundColor: '#0070f3', // Blue for login
-            color: 'white',
-            border: 'none',
-            borderRadius: '5px'
-          }}
-        >
-          Go to Login
-        </button>
-      )}
+          {!isPending && !session && (
+            <Button
+              type="button"
+              onClick={goToLogin}
+              className="w-full"
+            >
+              Go to Login
+            </Button>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
