@@ -78,12 +78,17 @@ export default function DashboardPage() {
 
       {/* Links to Polar Portal and Checkout */}
       <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        <a href="/api/auth/portal" target="_blank" rel="noopener noreferrer">
-          <Button variant="outline">Go to Customer Portal</Button>
-        </a>
-        <a href="/api/auth/checkout/consultation" target="_blank" rel="noopener noreferrer">
-          <Button>Purchase Consultation</Button> {/* Use the slug from auth.ts */}
-        </a>
+        <Button
+          variant="outline"
+          onClick={() => window.open('/api/auth/portal', '_blank')}
+        >
+          Go to Customer Portal
+        </Button>
+        <Button
+          onClick={() => window.open('/api/auth/checkout/consultation', '_blank')}
+        >
+          Purchase Consultation
+        </Button>
       </div>
 
       <Button variant="destructive" onClick={handleSignOut} style={{ marginTop: '20px' }}>
