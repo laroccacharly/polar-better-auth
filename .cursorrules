@@ -1,0 +1,9 @@
+Stack:
+- Next.js
+- better-auth
+- Polar
+- postgres with neon 
+- shadcn/ui
+- resend for email
+
+Env variables are loaded in src/env.ts

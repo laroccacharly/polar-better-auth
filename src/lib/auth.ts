@@ -3,37 +3,16 @@ import { polar } from "@polar-sh/better-auth";
 import { magicLink } from "better-auth/plugins";
 import { Polar } from "@polar-sh/sdk";
 import { Pool } from "pg";
-import dotenv from 'dotenv';
-dotenv.config({ path: '.env.local' });
+import { Resend } from 'resend';
+import { env } from "@/env";
 
-// --- Environment Variables --- //
-const polarAccessToken = process.env.POLAR_ACCESS_TOKEN;
-const polarServerEnv = process.env.POLAR_SERVER;
-const polarWebhookSecret = process.env.POLAR_WEBHOOK_SECRET; // Optional
-const authSecret = process.env.BETTER_AUTH_SECRET;
-const successUrl = process.env.SUCCESS_URL;
-const dbConnectionString = process.env.DATABASE_URL;
-// --- Validations (Moved here as they are needed for the config) --- //
-if (!polarAccessToken) {
-  throw new Error("POLAR_ACCESS_TOKEN environment variable is not set.");
-}
-if (!authSecret) {
-  throw new Error("BETTER_AUTH_SECRET environment variable is not set. It is required for session security.");
-}
-if (!successUrl) {
-  throw new Error("SUCCESS_URL environment variable is not set. It is required for checkout.");
-}
-
-// Validate Polar server environment
-if (polarServerEnv !== 'sandbox' && polarServerEnv !== 'production') {
-  throw new Error(`POLAR_SERVER must be 'sandbox' or 'production', received: ${polarServerEnv}`);
-}
-const polarServer: 'sandbox' | 'production' = polarServerEnv;
+// --- Initialize Resend Client --- //
+const resend = new Resend(env.RESEND_API_KEY);
 
 // --- Initialize Polar Client (Needed for the plugin) --- //
 const polarClient = new Polar({
-  accessToken: polarAccessToken,
-  server: polarServer,
+  accessToken: env.POLAR_ACCESS_TOKEN,
+  server: env.POLAR_SERVER,
 });
 
 // --- Prepare Polar Plugin Config (Webhooks Optional) --- //
@@ -49,11 +28,11 @@ const polarPluginConfig = {
         slug: "consultation" // Define a user-friendly slug
       },
     ],
-    successUrl: `${successUrl}?checkout_id={CHECKOUT_ID}`
+    successUrl: `${env.SUCCESS_URL}?checkout_id={CHECKOUT_ID}`
   },
-  ...(polarWebhookSecret ? {
+  ...(env.POLAR_WEBHOOK_SECRET ? {
     webhooks: {
-      secret: polarWebhookSecret,
+      secret: env.POLAR_WEBHOOK_SECRET,
       onPayload: async (event: unknown) => { // Changed any to unknown
         // Added type checks for safety
         let eventId = 'unknown_id';
@@ -81,9 +60,9 @@ const polarPluginConfig = {
 
 // --- Initialize and Export betterAuth Instance --- //
 export const auth = betterAuth({
-  secret: authSecret,
+  secret: env.BETTER_AUTH_SECRET,
   database: new Pool({
-    connectionString: dbConnectionString,
+    connectionString: env.DATABASE_URL,
   }),
   emailAndPassword: { // Ensure this is enabled
     enabled: true,
@@ -99,9 +78,19 @@ export const auth = betterAuth({
     magicLink({
         sendMagicLink: async ({ email, token, url }, request) => {
           // send email to user
-          console.log("Sending magic link to:", email);
-          console.log("Token:", token);
-          console.log("URL:", url);
+          console.log("Sending magic link via Resend to:", email);
+          try {
+            await resend.emails.send({
+              from: env.RESEND_FROM_EMAIL, // Use environment variable for sender
+              to: email,
+              subject: 'Your Magic Login Link',
+              html: `<p>Click <a href="${url}">here</a> to log in.</p><p>Your token is ${token} (for debugging, remove in production)</p>`
+            });
+            console.log("Magic link email sent successfully to:", email);
+          } catch (error) {
+            console.error("Failed to send magic link email:", error);
+            // Handle error appropriately (e.g., log, alert)
+          }
       } 
   }),
   ],

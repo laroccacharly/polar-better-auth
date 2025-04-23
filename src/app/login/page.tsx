@@ -1,84 +1,83 @@
-'use client'; // This page needs to be a Client Component to use hooks and handle form state
+"use client"
 
-import type React from 'react'; // Use type import for React
-import { useState } from 'react';
-import { useRouter } from 'next/navigation'; // Use App Router's navigation hook
-import { authClient } from '@/lib/auth-client';
-import Link from 'next/link'; // Import Link component
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
+import { signIn } from "@/lib/auth-client";
 
-const LoginPage = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
+export default function SignIn() {
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter(); // Get router instance for navigation
-
-  const { signIn } = authClient;
-
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    setError(null);
-    setLoading(true);
-
-    try {
-      const result = await signIn.email({ email, password });
-
-      console.log('Sign in successful:', result);
-      router.push('/');
-
-    } catch (err: unknown) {
-      console.error('Sign in failed:', err);
-      if (err instanceof Error) {
-        setError(err.message || 'An error occurred during sign in.');
-      } else {
-        setError('An unknown error occurred during sign in.');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [emailSent, setEmailSent] = useState(false);
+  
 
   return (
-    <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px', border: '1px solid #ccc', borderRadius: '8px' }}>
-      <form onSubmit={handleSubmit}>
-        <h1 style={{ textAlign: 'center' }}>Login</h1>
-        {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
-        <div style={{ marginBottom: '15px' }}>
-          <label htmlFor="email" style={{ display: 'block', marginBottom: '5px' }}>Email:</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
-          />
+    <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="max-w-md border rounded-lg shadow-sm">
+        {/* Only show heading and subheading if email not sent */}
+        {!emailSent && (
+          <div className="p-6">
+            <h1 className="text-lg md:text-xl font-semibold">Sign In</h1>
+            <p className="text-xs md:text-sm text-muted-foreground">
+              Enter your email below to login to your account
+            </p>
+          </div>
+        )}
+        <div className="p-6 pt-0">
+          <div className="grid gap-4">
+            {emailSent ? (
+              <div className="text-center py-8">
+                <h2 className="text-lg font-semibold mb-2">Check your email</h2>
+                <p className="text-sm text-muted-foreground">
+                  A magic sign-in link has been sent to <span className="font-medium">{email}</span>.<br />
+                  Please check your inbox and follow the link to log in.
+                </p>
+              </div>
+            ) : (
+              <div className="grid gap-2">
+                <label htmlFor="email">Email</label>
+                <input
+                  id="email"
+                  type="email"
+                  placeholder="m@example.com"
+                  required
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    setEmail(e.target.value);
+                  }}
+                  value={email}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                />
+                <Button
+                  disabled={loading}
+                  className="gap-2"
+                  onClick={async () => {
+                    await signIn.magicLink(
+                    {
+                      email,
+                      callbackURL: "/dashboard",
+                    },
+                    {
+                       onRequest: (ctx) => {
+                          setLoading(true);
+                        },
+                       onResponse: (ctx) => {
+                           setLoading(false);
+                           setEmailSent(true);
+                       },
+                     },
+                    );
+                   }}>
+                    {loading ? (
+                       <Loader2 size={16} className="animate-spin" />
+                       ):(
+                           <>Sign-in with Magic Link</>
+                     )}
+                </Button>
+              </div>          
+            )}
+          </div>
         </div>
-        <div style={{ marginBottom: '20px' }}>
-          <label htmlFor="password" style={{ display: 'block', marginBottom: '5px' }}>Password:</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
-          />
-        </div>
-        <button type="submit" disabled={loading} style={{ width: '100%', padding: '10px', backgroundColor: '#0070f3', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-          {loading ? 'Logging In...' : 'Login'}
-        </button>
-      </form>
-      {/* Add link to Sign up page */}
-      <p style={{ textAlign: 'center', marginTop: '20px' }}>
-        Don&apos;t have an account?{" "}
-        <Link href="/signup" style={{ color: '#0070f3', textDecoration: 'underline' }}>
-          Sign up
-        </Link>
-      </p>
-      {/* Optionally add links to signup or password reset pages here */}
+      </div>
     </div>
   );
-};
-
-export default LoginPage; 
+}
